@@ -155,9 +155,11 @@ pub fn find_longest_chain(
   let valid_next_words = next_words
     .iter()
     .filter(|id| !chain.iter().any(|prev_id| prev_id == *id));
+
   if valid_next_words.to_owned().take(1).next().is_none() {
     return chain;
   }
+
   let mut max_length: i32 = -1;
   let mut longest_chain: Vec<i32> = Vec::new();
 
@@ -171,6 +173,7 @@ pub fn find_longest_chain(
       longest_chain = current_chain;
     }
   });
+
   longest_chain
 }
 
