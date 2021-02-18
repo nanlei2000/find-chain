@@ -6,8 +6,8 @@ use std::collections::HashMap;
 #[allow(non_snake_case)]
 pub struct Node {
   pub Word: String,
-  pub ID: i32,
-  pub Next: Vec<i32>,
+  pub ID: u16,
+  pub Next: Vec<u16>,
 }
 
 pub fn read_graph(data: &str) -> Vec<Node> {
@@ -18,8 +18,8 @@ pub struct MaxLoopCount {
   pub value: i64,
 }
 
-pub type IDToNextMap = HashMap<i32, Vec<i32>>;
-pub type WordToIDMap = HashMap<String, i32>;
+pub type IDToNextMap = HashMap<u16, Vec<u16>>;
+pub type WordToIDMap = HashMap<String, u16>;
 
 /// make a word->Graph map
 pub fn make_id_to_node_map(graph: &[Node]) -> IDToNextMap {
@@ -41,11 +41,11 @@ pub fn make_word_to_id_map(graph: &[Node]) -> WordToIDMap {
 
 /// perform a dfs into Graph to find longest idiom chain
 pub fn find_longest_chain(
-  id: i32,
-  chain: Vec<i32>,
+  id: u16,
+  chain: Vec<u16>,
   node_map: &IDToNextMap,
   max_loop_count: &mut MaxLoopCount,
-) -> Vec<i32> {
+) -> Vec<u16> {
   max_loop_count.value -= 1;
   if max_loop_count.value < 0 {
     return chain;
@@ -60,14 +60,14 @@ pub fn find_longest_chain(
     return chain;
   }
 
-  let mut max_length: i32 = -1;
-  let mut longest_chain: Vec<i32> = Vec::new();
+  let mut max_length: usize = 0;
+  let mut longest_chain: Vec<u16> = Vec::new();
 
   valid_next_words.for_each(|id| {
     let mut added_chain = chain.to_owned();
     added_chain.push(*id);
     let current_chain = find_longest_chain(*id, added_chain, node_map, max_loop_count);
-    let current_length = current_chain.len() as i32;
+    let current_length = current_chain.len();
     if current_length > max_length {
       max_length = current_length;
       longest_chain = current_chain;
@@ -77,8 +77,8 @@ pub fn find_longest_chain(
   longest_chain
 }
 
-pub fn map_id_to_word(graph: &[Node], id_list: &[i32]) -> Vec<String> {
-  let mut id_to_word_map: HashMap<i32, String> = HashMap::new();
+pub fn map_id_to_word(graph: &[Node], id_list: &[u16]) -> Vec<String> {
+  let mut id_to_word_map: HashMap<u16, String> = HashMap::new();
   for node in graph {
     id_to_word_map.insert(node.ID, node.Word.clone());
   }
