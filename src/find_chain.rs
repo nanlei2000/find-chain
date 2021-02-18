@@ -42,6 +42,7 @@ pub fn make_word_to_id_map(graph: &[Node]) -> WordToIDMap {
 /// perform a dfs into Graph to find longest idiom chain
 pub fn find_longest_chain(
   id: u16,
+  chain_set: HashSet<u16>,
   chain: Vec<u16>,
   node_map: &IDToNextMap,
   max_loop_count: &mut MaxLoopCount,
@@ -52,58 +53,23 @@ pub fn find_longest_chain(
   }
 
   let next_words = node_map.get(&id).unwrap();
-  let valid_next_words = next_words
-    .iter()
-    .filter(|id| !chain.iter().any(|prev_id| prev_id == *id));
+  let valid_next_words = next_words.iter().filter(|id| !chain_set.contains(id));
 
   if valid_next_words.to_owned().take(1).next().is_none() {
     return chain;
   }
 
-  let mut max_length: usize = 0;
+  let mut max_length: u16 = 0;
   let mut longest_chain: Vec<u16> = Vec::new();
 
   valid_next_words.for_each(|id| {
+    let mut added_chain_set = chain_set.to_owned();
+    added_chain_set.insert(*id);
     let mut added_chain = chain.to_owned();
     added_chain.push(*id);
-    let current_chain = find_longest_chain(*id, added_chain, node_map, max_loop_count);
-    let current_length = current_chain.len();
-    if current_length > max_length {
-      max_length = current_length;
-      longest_chain = current_chain;
-    }
-  });
-
-  longest_chain
-}
-
-/// perform a dfs into Graph to find longest idiom chain
-pub fn find_longest_chain_hash_set(
-  id: u16,
-  chain: HashSet<u16>,
-  node_map: &IDToNextMap,
-  max_loop_count: &mut MaxLoopCount,
-) -> HashSet<u16> {
-  max_loop_count.value -= 1;
-  if max_loop_count.value < 0 {
-    return chain;
-  }
-
-  let next_words = node_map.get(&id).unwrap();
-  let valid_next_words = next_words.iter().filter(|id| !chain.contains(id));
-
-  if valid_next_words.to_owned().take(1).next().is_none() {
-    return chain;
-  }
-
-  let mut max_length: usize = 0;
-  let mut longest_chain: HashSet<u16> = HashSet::new();
-
-  valid_next_words.for_each(|id| {
-    let mut added_chain = chain.to_owned();
-    added_chain.insert(*id);
-    let current_chain = find_longest_chain_hash_set(*id, added_chain, node_map, max_loop_count);
-    let current_length = current_chain.len();
+    let current_chain =
+      find_longest_chain(*id, added_chain_set, added_chain, node_map, max_loop_count);
+    let current_length = current_chain.len() as u16;
     if current_length > max_length {
       max_length = current_length;
       longest_chain = current_chain;
