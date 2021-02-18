@@ -24,38 +24,20 @@ fn main() {
   let word_to_id_map: WordToIDMap = make_word_to_id_map(&graph);
   let id: i32 = *word_to_id_map.get(word).unwrap();
   let id_to_next_map = make_id_to_node_map(&graph);
-  {
-    let now = timestamp();
-    let res: Vec<i32> = find_longest_chain(
-      id,
-      vec![id],
-      &id_to_next_map,
-      &mut MaxLoopCount {
-        value: *max_loop_count,
-      },
-    );
-    let duration = timestamp() - now;
-    let words = map_id_to_word(&graph, &res);
-    println!("chain: {:?}", words);
-    println!("length: {}", words.len());
-    println!("dfs took: {}ms", duration);
-  }
-  // {
-  //   let now = timestamp();
-  //   let res: Vec<i32> = find_longest_chain_rayon(
-  //     id,
-  //     &[id],
-  //     &id_to_next_map,
-  //     &mut MaxLoopCount {
-  //       value: *max_loop_count,
-  //     },
-  //   );
-  //   let duration = timestamp() - now;
-  //   let words = map_id_to_word(&graph, &res);
-  //   // println!("chain: {:?}", words);
-  //   println!("[rayon] length: {}", words.len());
-  //   println!("[rayon] dfs took: {}ms", duration);
-  // }
+  let now = timestamp();
+  let res: Vec<i32> = find_longest_chain(
+    id,
+    vec![id],
+    &id_to_next_map,
+    &mut MaxLoopCount {
+      value: *max_loop_count,
+    },
+  );
+  let duration = timestamp() - now;
+  let words = map_id_to_word(&graph, &res);
+  println!("chain: {:?}", words);
+  println!("length: {}", words.len());
+  println!("dfs took: {}ms", duration);
 }
 
 fn timestamp() -> i64 {
