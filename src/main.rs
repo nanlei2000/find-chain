@@ -41,7 +41,7 @@ fn main() {
     );
     let duration = timestamp() - now;
     let words = map_id_to_word(&graph, &res);
-    println!("chain: {:?}", words);
+    // println!("chain: {:?}", words);
     println!("length: {}", res.len());
     println!("hash set dfs took: {}ms", duration);
   }

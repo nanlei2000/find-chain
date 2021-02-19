@@ -1,5 +1,7 @@
 extern crate serde;
 extern crate serde_json;
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -61,14 +63,17 @@ pub fn find_longest_chain(
 
   let mut max_length: u16 = 0;
   let mut longest_chain: Vec<u16> = Vec::new();
+  let mut next_v: Vec<&u16> = valid_next_words.collect();
+  let mut rng = thread_rng();
+  next_v.shuffle(&mut rng);
 
-  valid_next_words.for_each(|id| {
+  next_v.iter().for_each(|id| {
     let mut added_chain_set = chain_set.to_owned();
-    added_chain_set.insert(*id);
+    added_chain_set.insert(**id);
     let mut added_chain = chain.to_owned();
-    added_chain.push(*id);
+    added_chain.push(**id);
     let current_chain =
-      find_longest_chain(*id, added_chain_set, added_chain, node_map, max_loop_count);
+      find_longest_chain(**id, added_chain_set, added_chain, node_map, max_loop_count);
     let current_length = current_chain.len() as u16;
     if current_length > max_length {
       max_length = current_length;
