@@ -11,9 +11,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() {
   let args: Vec<String> = env::args().collect();
-  if args.len() != 3 {
-    panic!("use like this: cmd 10000 文武双全")
-  }
+  // if args.len() != 3 {
+  //   panic!("use like this: cmd 10000 文武双全")
+  // }
   let max_loop_count = &args[1].parse::<i64>().unwrap();
   let word = &args[2];
   println!(
@@ -41,7 +41,7 @@ fn main() {
     );
     let duration = timestamp() - now;
     let words = map_id_to_word(&graph, &res);
-    // println!("chain: {:?}", words);
+    println!("chain: {:?}", words);
     println!("length: {}", res.len());
     println!("hash set dfs took: {}ms", duration);
   }
