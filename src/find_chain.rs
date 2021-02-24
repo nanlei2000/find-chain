@@ -2,6 +2,7 @@ extern crate serde;
 extern crate serde_json;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -14,10 +15,6 @@ pub struct Node {
 
 pub fn read_graph(data: &str) -> Vec<Node> {
   serde_json::from_str(data).unwrap()
-}
-
-pub struct MaxLoopCount {
-  pub value: i64,
 }
 
 pub type IDToNextMap = HashMap<u16, Vec<u16>>;
@@ -47,10 +44,10 @@ pub fn find_longest_chain(
   chain_set: HashSet<u16>,
   chain: Vec<u16>,
   node_map: &IDToNextMap,
-  max_loop_count: &mut MaxLoopCount,
+  max_loop_count: &RefCell<i64>,
 ) -> Vec<u16> {
-  max_loop_count.value -= 1;
-  if max_loop_count.value < 0 {
+  let old_value = max_loop_count.replace_with(|&mut old| old - 1);
+  if old_value - 1 < 0 {
     return chain;
   }
 

@@ -19,8 +19,12 @@
           "kind": "bin"
         }
       },
-      "args": ["10000","文武双全"],
-      "cwd": "${workspaceFolder}"
+      "args": ["1","文武双全"],
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"],
+      "sourceMap": {
+        "/rustc/*": "${env:HOME}/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust"
+      }
     },
     {
       "type": "lldb",
@@ -39,7 +43,8 @@
         }
       },
       "args": [],
-      "cwd": "${workspaceFolder}"
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
     }
   ]
 }

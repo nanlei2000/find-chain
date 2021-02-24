@@ -5,6 +5,7 @@ mod find_chain;
 use find_chain::*;
 mod db;
 use db::DATA;
+use std::cell::RefCell;
 use std::collections::HashSet;
 use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -35,9 +36,7 @@ fn main() {
       set,
       vec![id],
       &id_to_next_map,
-      &mut MaxLoopCount {
-        value: *max_loop_count,
-      },
+      &RefCell::new(*max_loop_count),
     );
     let duration = timestamp() - now;
     let words = map_id_to_word(&graph, &res);
