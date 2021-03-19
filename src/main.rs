@@ -21,16 +21,23 @@ fn main() {
     word, max_loop_count
   );
 
-  let graph = read_graph(DATA);
-  let word_to_id_map: WordToIDMap = make_word_to_id_map(&graph);
-  let id: u16 = *word_to_id_map.get(word).unwrap();
+  // 借用由此开始
+  let graph: Vec<Node> = read_graph(DATA);
+  let mut id: Option<&u16> = None;
+  for item in graph.iter() {
+    if item.Word == *word {
+      id = Some(&item.ID)
+    }
+  }
+  assert!(id.is_some());
+  let id = id.unwrap();
   let id_to_next_map = make_id_to_node_map(&graph);
 
   {
     let now = timestamp();
-    let mut set = HashSet::new();
+    let mut set: HashSet<&u16> = HashSet::new();
     set.insert(id);
-    let res = find_longest_chain(
+    let res: Vec<&u16> = find_longest_chain(
       &id,
       set,
       vec![id],

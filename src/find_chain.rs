@@ -16,35 +16,25 @@ pub fn read_graph(data: &str) -> Vec<Node> {
   serde_json::from_str(data).unwrap()
 }
 
-pub type IDToNextMap = HashMap<u16, Vec<u16>>;
-pub type WordToIDMap = HashMap<String, u16>;
+pub type IDToNextMap<'a> = HashMap<u16, &'a Vec<u16>>;
 
 /// make a word->Graph map
 pub fn make_id_to_node_map(graph: &[Node]) -> IDToNextMap {
   let mut result: IDToNextMap = HashMap::new();
   for node in graph {
-    result.insert(node.ID, node.Next.clone());
-  }
-  result
-}
-
-/// make a word->id map
-pub fn make_word_to_id_map(graph: &[Node]) -> WordToIDMap {
-  let mut result: WordToIDMap = HashMap::new();
-  for node in graph {
-    result.insert(node.Word.clone(), node.ID);
+    result.insert(node.ID, &node.Next);
   }
   result
 }
 
 /// perform a dfs into Graph to find longest idiom chain
-pub fn find_longest_chain(
+pub fn find_longest_chain<'graph>(
   id: &u16,
-  chain_set: HashSet<u16>,
-  chain: Vec<u16>,
-  node_map: &IDToNextMap,
+  chain_set: HashSet<&'graph u16>,
+  chain: Vec<&'graph u16>,
+  node_map: &'graph IDToNextMap,
   max_loop_count: &RefCell<i64>,
-) -> Vec<u16> {
+) -> Vec<&'graph u16> {
   let old_value = max_loop_count.replace_with(|&mut old| old - 1);
   if old_value - 1 < 0 {
     return chain;
@@ -58,16 +48,16 @@ pub fn find_longest_chain(
   }
 
   let mut max_length: u16 = 0;
-  let mut longest_chain: Vec<u16> = Vec::new();
+  let mut longest_chain: Vec<&'graph u16> = Vec::new();
   let mut next_v: Vec<&u16> = valid_next_words.collect();
   let mut rng = thread_rng();
   next_v.shuffle(&mut rng);
 
   next_v.iter().for_each(|id| {
     let mut added_chain_set = chain_set.to_owned();
-    added_chain_set.insert(**id);
+    added_chain_set.insert(*id);
     let mut added_chain = chain.to_owned();
-    added_chain.push(**id);
+    added_chain.push(*id);
     let current_chain =
       find_longest_chain(id, added_chain_set, added_chain, node_map, max_loop_count);
     let current_length = current_chain.len() as u16;
@@ -80,15 +70,21 @@ pub fn find_longest_chain(
   longest_chain
 }
 
-pub fn map_id_to_word(graph: &[Node], id_list: &[u16]) -> Vec<String> {
-  let mut id_to_word_map: HashMap<u16, String> = HashMap::new();
+pub fn map_id_to_word<'graph>(
+  graph: &'graph Vec<Node>,
+  id_list: &'graph Vec<&u16>,
+) -> Vec<&'graph str> {
+  let mut id_to_word_map: HashMap<u16, &str> = HashMap::new();
   for node in graph {
-    id_to_word_map.insert(node.ID, node.Word.clone());
+    id_to_word_map.insert(node.ID, &node.Word);
   }
 
-  let mut result: Vec<String> = Vec::new();
+  let mut result: Vec<&str> = Vec::new();
   for id in id_list {
-    let word: String = id_to_word_map.get(&id).unwrap().to_string();
+    let word = match id_to_word_map.get(&id) {
+      Some(w) => w,
+      _ => continue,
+    };
     result.push(word);
   }
   result
