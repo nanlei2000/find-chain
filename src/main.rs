@@ -23,10 +23,10 @@ fn main() {
 
   // 借用由此开始
   let graph: Vec<Node> = read_graph(DATA);
-  let mut id: Option<&u16> = None;
+  let mut id: Option<u16> = None;
   for item in graph.iter() {
     if item.Word == *word {
-      id = Some(&item.ID);
+      id = Some(item.ID);
       break;
     }
   }
@@ -37,10 +37,10 @@ fn main() {
 
   {
     let now = timestamp();
-    let mut set: HashSet<&u16> = HashSet::new();
+    let mut set: HashSet<u16> = HashSet::new();
     set.insert(id);
-    let res: Vec<&u16> = find_longest_chain(
-      &id,
+    let res: Vec<u16> = find_longest_chain(
+      id,
       set,
       vec![id],
       &id_to_next_map,
