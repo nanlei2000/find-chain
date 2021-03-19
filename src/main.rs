@@ -26,11 +26,13 @@ fn main() {
   let mut id: Option<&u16> = None;
   for item in graph.iter() {
     if item.Word == *word {
-      id = Some(&item.ID)
+      id = Some(&item.ID);
+      break;
     }
   }
   assert!(id.is_some());
   let id = id.unwrap();
+
   let id_to_next_map = make_id_to_node_map(&graph);
 
   {
