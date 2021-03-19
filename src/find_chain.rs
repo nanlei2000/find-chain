@@ -1,7 +1,6 @@
-extern crate serde;
-extern crate serde_json;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
+use serde_json;
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
@@ -40,7 +39,7 @@ pub fn make_word_to_id_map(graph: &[Node]) -> WordToIDMap {
 
 /// perform a dfs into Graph to find longest idiom chain
 pub fn find_longest_chain(
-  id: u16,
+  id: &u16,
   chain_set: HashSet<u16>,
   chain: Vec<u16>,
   node_map: &IDToNextMap,
@@ -51,7 +50,7 @@ pub fn find_longest_chain(
     return chain;
   }
 
-  let next_words = node_map.get(&id).unwrap();
+  let next_words = node_map.get(id).unwrap();
   let valid_next_words = next_words.iter().filter(|id| !chain_set.contains(id));
 
   if valid_next_words.to_owned().take(1).next().is_none() {
@@ -70,7 +69,7 @@ pub fn find_longest_chain(
     let mut added_chain = chain.to_owned();
     added_chain.push(**id);
     let current_chain =
-      find_longest_chain(**id, added_chain_set, added_chain, node_map, max_loop_count);
+      find_longest_chain(id, added_chain_set, added_chain, node_map, max_loop_count);
     let current_length = current_chain.len() as u16;
     if current_length > max_length {
       max_length = current_length;

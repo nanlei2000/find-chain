@@ -1,6 +1,5 @@
 #[macro_use]
 extern crate serde_derive;
-
 mod find_chain;
 use find_chain::*;
 mod db;
@@ -32,7 +31,7 @@ fn main() {
     let mut set = HashSet::new();
     set.insert(id);
     let res = find_longest_chain(
-      id,
+      &id,
       set,
       vec![id],
       &id_to_next_map,
