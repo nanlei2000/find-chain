@@ -1,7 +1,6 @@
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use serde_json;
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -33,12 +32,12 @@ pub fn find_longest_chain(
   chain_set: HashSet<u16>,
   chain: Vec<u16>,
   node_map: &IDToNextMap,
-  max_loop_count: &RefCell<i64>,
+  max_loop_count: &mut i64,
 ) -> Vec<u16> {
-  let old_value = max_loop_count.replace_with(|&mut old| old - 1);
-  if old_value - 1 < 0 {
+  if *max_loop_count < 0 {
     return chain;
   }
+  *max_loop_count = *max_loop_count - 1;
 
   let next_words = *node_map.get(&id).unwrap();
   let mut valid_next_words_v: Vec<&u16> = next_words
@@ -51,7 +50,7 @@ pub fn find_longest_chain(
   let mut max_length: u16 = 0;
   let mut longest_chain: Vec<u16> = Vec::new();
 
-  if old_value % 1000 == 0 {
+  if *max_loop_count % 1000 == 0 {
     let mut rng = thread_rng();
     valid_next_words_v.shuffle(&mut rng);
   }
