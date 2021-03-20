@@ -41,8 +41,10 @@ pub fn find_longest_chain(
   }
 
   let next_words = *node_map.get(&id).unwrap();
-  let mut valid_next_words_v: Vec<&u16> =
-    next_words.iter().filter(|id| !chain.contains(id)).collect();
+  let mut valid_next_words_v: Vec<&u16> = next_words
+    .iter()
+    .filter(|id| !chain_set.contains(id))
+    .collect();
   if valid_next_words_v.is_empty() {
     return chain;
   }
