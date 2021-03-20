@@ -40,20 +40,21 @@ pub fn find_longest_chain(
     return chain;
   }
 
-  let next_words = node_map.get(&id).unwrap();
-  let valid_next_words = next_words.iter().filter(|id| !chain_set.contains(id));
-
-  if valid_next_words.to_owned().take(1).next().is_none() {
+  let next_words = *node_map.get(&id).unwrap();
+  let mut valid_next_words_v: Vec<&u16> =
+    next_words.iter().filter(|id| !chain.contains(id)).collect();
+  if valid_next_words_v.is_empty() {
     return chain;
   }
-
   let mut max_length: u16 = 0;
   let mut longest_chain: Vec<u16> = Vec::new();
-  let mut next_v: Vec<&u16> = valid_next_words.collect();
-  let mut rng = thread_rng();
-  next_v.shuffle(&mut rng);
 
-  next_v.iter().for_each(|id| {
+  if old_value % 1000 == 0 {
+    let mut rng = thread_rng();
+    valid_next_words_v.shuffle(&mut rng);
+  }
+
+  valid_next_words_v.iter().for_each(|id| {
     let mut added_chain_set = chain_set.to_owned();
     added_chain_set.insert(**id);
     let mut added_chain = chain.to_owned();
