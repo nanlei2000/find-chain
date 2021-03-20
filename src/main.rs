@@ -13,7 +13,7 @@ fn main() {
   // if args.len() != 3 {
   //   panic!("use like this: cmd 10000 文武双全")
   // }
-  let mut max_loop_count = args[1].parse::<i64>().unwrap().to_owned();
+  let mut max_loop_count = args[1].parse::<i64>().unwrap();
   let word = &args[2];
   println!(
     "[info] head idiom: {}, max loop count: {}",
