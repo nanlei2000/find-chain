@@ -6,9 +6,12 @@ use std::collections::{HashMap, HashSet};
 #[derive(Debug, Serialize, Deserialize)]
 #[allow(non_snake_case)]
 pub struct Node {
-  pub Word: String,
-  pub ID: u16,
-  pub Next: Vec<u16>,
+  #[serde(rename(deserialize = "Word"))]
+  pub word: String,
+  #[serde(rename(deserialize = "ID"))]
+  pub id: u16,
+  #[serde(rename(deserialize = "Next"))]
+  pub next: Vec<u16>,
 }
 
 pub fn read_graph(data: &str) -> Vec<Node> {
@@ -17,11 +20,11 @@ pub fn read_graph(data: &str) -> Vec<Node> {
 
 pub type IDToNextMap<'a> = HashMap<u16, &'a Vec<u16>>;
 
-/// make a word->Graph map
+/// make a word -> Graph map
 pub fn make_id_to_node_map(graph: &[Node]) -> IDToNextMap {
   let mut result: IDToNextMap = HashMap::new();
   for node in graph {
-    result.insert(node.ID, &node.Next);
+    result.insert(node.id, &node.next);
   }
   result
 }
@@ -78,7 +81,7 @@ pub fn map_id_to_word<'graph>(
 ) -> Vec<&'graph str> {
   let mut id_to_word_map: HashMap<u16, &str> = HashMap::new();
   for node in graph {
-    id_to_word_map.insert(node.ID, &node.Word);
+    id_to_word_map.insert(node.id, &node.word);
   }
 
   let mut result: Vec<&str> = Vec::new();
